@@ -1,0 +1,18 @@
+{
+  "name": "my-docs",
+  "private": false,
+  "scripts": {
+    "meta": "node scripts/generateMeta.js",
+    "category": "node scripts/generateCategory.js",
+    "docs:dev": "npm run meta && npm run category && vitepress dev docs",
+    "docs:build": "npm run meta && npm run category && vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  },
+  "dependencies": {
+    "markdown-it-katex": "^2.0.3",
+    "markdown-it-mathjax3": "^4.3.2"
+  }
+}
