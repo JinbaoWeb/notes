@@ -46,10 +46,11 @@ function scanDocs(dir) {
       result.push(...scanDocs(fullPath));
     } else if (file.endsWith(".md")) {
       const relPath = path.relative(DOCS_DIR, fullPath);
-      const category = path.dirname(relPath) === "." ? "root" : path.dirname(relPath);
+      const parts = relPath.split('/');
+      const category = parts.length > 1 ? parts[0] : 'Uncategorized';
       const content = fs.readFileSync(fullPath, 'utf8');
       const title = extractTitleFromMarkdown(content) || humanizeFilename(path.basename(file, '.md'));
-      const slug = "/" + relPath.replace(/\\/g, "/");
+      const slug = "/" + category;
       const link = slug + '.html';
       const date = getGitTime(fullPath)
       result.push({ title, slug, link, category, date });
@@ -61,7 +62,11 @@ function scanDocs(dir) {
 const articles = scanDocs(DOCS_DIR);
 console.log(`✅ 共 ${articles.length} 篇文章`);
 console.log(`✅ articles = ${JSON.stringify(articles, null, 2)}`);
-
+const categoryStats = {};
+for (const article of articles) {
+  const category = article.category
+  categoryStats[category] = (categoryStats[category] || 0) + 1;
+}
 // 最近 5 篇
   const recentPosts = [...articles]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -69,9 +74,62 @@ console.log(`✅ articles = ${JSON.stringify(articles, null, 2)}`);
 
   const metadata = {
     articles,
+    categoryStats,
     recentPosts
   };
 
 console.log(`✅ metadata = ${JSON.stringify(metadata, null, 2)}`);
 
 fs.writeFileSync(OUTPUT, JSON.stringify(metadata, null, 2));
+
+const categories = Object.keys(categoryStats || {}).filter(cat => cat && cat.trim());
+if (categories.length === 0) {
+  console.warn('⚠️ No valid categories found in metadata.json');
+  process.exit(0);
+}
+
+let generatedCount = 0;
+for (const cat of categories) {
+  const safeCat = cat.trim();
+  if (!safeCat) continue;
+
+  const categoryDir = path.join(DOCS_DIR, safeCat);
+
+  // 如果分类目录不存在，跳过（理论上不应发生）
+  if (!fs.existsSync(categoryDir)) {
+    console.warn(`⚠️ Skipping category "${safeCat}": directory not found.`);
+    continue;
+  }
+
+  const indexPath = path.join(categoryDir, 'index.md');
+
+  let shouldWrite = true;
+
+  // 如果 index.md 已存在，检查是否为自动生成
+  // if (fs.existsSync(indexPath)) {
+  //   const content = fs.readFileSync(indexPath, 'utf8');
+  //   if (!content.includes(AUTO_COMMENT)) {
+  //     console.warn(`⚠️ Skipped ${indexPath} (exists and not auto-generated).`);
+  //     shouldWrite = false;
+  //   }
+  // }
+
+  if (!shouldWrite) continue;
+
+  // 生成简洁的 frontmatter-only index.md
+  const content = `---
+layout: CategoryPage
+category: ${safeCat}
+---
+`;
+
+  fs.writeFileSync(indexPath, content, 'utf8');
+  console.log(`✅ Generated: ${indexPath}`);
+  generatedCount++;
+}
+
+console.log(`\n✨ Successfully generated index.md for ${generatedCount} categories.`);
+
+
+
+
