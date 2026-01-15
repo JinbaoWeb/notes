@@ -47,17 +47,18 @@ function scanDocs(dir) {
     const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
+      console.log(`当前扫描 ${dir}/${file}目录`);
       result.push(...scanDocs(fullPath));
     } else if (file.endsWith(".md")) {
       const relPath = path.relative(DOCS_DIR, fullPath);
-      const parts = relPath.split('/');
+      const parts = relPath.split('.')[0].split('/');
       const category = parts.length > 1 ? parts[parts.length-1] : 'Uncategorized';
       const content = fs.readFileSync(fullPath, 'utf8');
       const title = extractTitleFromMarkdown(content) || humanizeFilename(path.basename(file, '.md'));
       const slug = "/" + category;
       const link = slug + '.html';
       const date = getGitTime(fullPath)
-      result.push({ title, slug, link, category, date, relPath, fullPath, file });
+      result.push({ title, slug, link, category, date, relPath, fullPath, dir, file });
     }
   }
   return result;
