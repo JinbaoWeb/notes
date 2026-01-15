@@ -12,7 +12,7 @@ if (fs.existsSync(metaPath)) {
   categories = Object.keys(meta.categoryStats).sort();
   metadata = meta;
 } else {
-  console.warn('⚠️ metadata.json not found. Nav will fallback to static list.');
+  console.warn('⚠️ ${metaPath} not found. Nav will fallback to static list.');
 }
 
 // 固定导航项
@@ -75,3 +75,4 @@ export default {
     }
   }
 }
+
