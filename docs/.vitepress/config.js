@@ -4,6 +4,8 @@ import mathjax3 from "markdown-it-mathjax3";
 
 // 读取 metadata.json（确保它已由 generateMeta.js 生成）
 const metaPath = path.resolve(__dirname, '../metadata.json');
+
+console.log('获取到 metaPath:', metaPath)
 let categories = [];
 let metadata = {};
 if (fs.existsSync(metaPath)) {
@@ -75,4 +77,5 @@ export default {
     }
   }
 }
+
 
