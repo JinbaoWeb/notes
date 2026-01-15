@@ -1,14 +1,16 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'fs';
+import path from 'path';
 import mathjax3 from "markdown-it-mathjax3";
 
 // 读取 metadata.json（确保它已由 generateMeta.js 生成）
-const metaPath = path.resolve("docs/.vitepress/metadata.json");
+const metaPath = path.resolve(__dirname, '../metadata.json');
 let categories = [];
+let metadata = {};
 if (fs.existsSync(metaPath)) {
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
   // 获取所有分类名（按字母排序或保持原序）
   categories = Object.keys(meta.categoryStats).sort();
+  metadata = meta;
 } else {
   console.warn('⚠️ metadata.json not found. Nav will fallback to static list.');
 }
@@ -50,7 +52,8 @@ export default {
     nav,
     footer: {
       copyright: 'Copyright © 2017-present Jinbao'
-    }
+    },
+    metadata: metadata
   },
   markdown: {
     config: (md) => {
@@ -66,7 +69,9 @@ export default {
       compilerOptions: {
         isCustomElement: (tag) => customElements.includes(tag)
       }
+    },
+    define: {
+      __METADATA__: JSON.stringify(metadata)
     }
   }
-
 }
