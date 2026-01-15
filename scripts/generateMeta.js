@@ -7,6 +7,8 @@ const OUTPUT = path.resolve("docs/.vitepress/metadata.json");
 const IGNORE_DIRS = new Set(['.vitepress', 'public', 'assets', '.git']);
 const IGNORE_FILENAMES = new Set(['index.md', 'README.md', 'metadata.json']);
 
+console.log(`✅ IGNORE_DIRS = ${JSON.stringify(IGNORE_DIRS, null, 2)}`);
+console.log(`✅ IGNORE_FILENAMES = ${JSON.stringify(IGNORE_FILENAMES, null, 2)}`);
 // 获取 git 最后提交时间
 function getGitTime(filePath) {
   try {
@@ -45,10 +47,8 @@ function scanDocs(dir) {
     const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
-      if (!IGNORE_DIRS.has(file)) {
-        result.push(...scanDocs(fullPath));
-      }
-    } else if (file.endsWith(".md")&& !IGNORE_FILENAMES.has(file)) {
+      result.push(...scanDocs(fullPath));
+    } else if (file.endsWith(".md")) {
       const relPath = path.relative(DOCS_DIR, fullPath);
       const parts = relPath.split('/');
       const category = parts.length > 1 ? parts[parts.length-1] : 'Uncategorized';
@@ -57,7 +57,7 @@ function scanDocs(dir) {
       const slug = "/" + category;
       const link = slug + '.html';
       const date = getGitTime(fullPath)
-      result.push({ title, slug, link, category, date, fullPath });
+      result.push({ title, slug, link, category, date, fullPath, file });
     }
   }
   return result;
