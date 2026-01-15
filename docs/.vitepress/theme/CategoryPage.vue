@@ -28,8 +28,7 @@
 
 <script setup>
 import { useData } from 'vitepress'
-import fs from "node:fs";
-import path from "node:path";
+import meta from '../../metadata.json'
 
 // ====== 数据获取 ======
 const { frontmatter } = useData()
@@ -39,11 +38,6 @@ const category = frontmatter.value.category
 if (!category) {
   console.error('[CategoryPage] Missing "category" in frontmatter of index.md')
 }
-
-const META_PATH = path.resolve("docs/.vitepress/metadata.json");
-console.log(`✅ META_PATH: ${META_PATH}`);
-const meta = JSON.parse(fs.readFileSync(META_PATH, 'utf8'));
-console.log(`✅ meta = ${JSON.stringify(meta, null, 2)}`);
 // ====== 文章过滤与排序 ======
 const postsInCategory = meta.articles?.filter(
   (post) => post.category === category
@@ -134,3 +128,4 @@ function formatDate(dateString) {
 }
 
 </style>
+
