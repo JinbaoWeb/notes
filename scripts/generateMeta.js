@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DOCS_DIR = path.resolve("docs");
-const OUTPUT = path.resolve("docs/.vitepress/meta.json");
+const OUTPUT = path.resolve("docs/.vitepress/metadata.json");
 
 // 获取 git 最后提交时间
 function getGitTime(filePath) {
@@ -17,7 +17,22 @@ function getGitTime(filePath) {
     return null;
   }
 }
+/**
+ * 提取 Markdown 标题
+ */
+function extractTitleFromMarkdown(content) {
+  const match = content.match(/^#\s+(.+)$/m);
+  return match ? match[1].trim() : null;
+}
 
+/**
+ * 将文件名转为可读标题（如 hello-world.md → Hello World）
+ */
+function humanizeFilename(filename) {
+  return filename
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 // 递归扫描 docs 下的 md 文件
 function scanDocs(dir) {
   const result = [];
@@ -32,18 +47,32 @@ function scanDocs(dir) {
     } else if (file.endsWith(".md")) {
       const relPath = path.relative(DOCS_DIR, fullPath);
       const category = path.dirname(relPath) === "." ? "root" : path.dirname(relPath);
-
-      result.push({
-        title: path.basename(file, ".md"),
-        path: "/" + relPath.replace(/\\/g, "/"),
-        category,
-        gitTime: getGitTime(fullPath)
-      });
+      const content = fs.readFileSync(relPath, 'utf8');
+      const title = extractTitleFromMarkdown(content) || humanizeFilename(path.basename(file, '.md'));
+      const slug = "/" + relPath.replace(/\\/g, "/");
+      const link = slug + '.html';
+      const date = getGitTime(fullPath)
+      result.push({ title, slug, link, category, date });
     }
   }
   return result;
 }
 
-const meta = scanDocs(DOCS_DIR);
-fs.writeFileSync(OUTPUT, JSON.stringify(meta, null, 2));
-console.log(`✅ meta.json 已生成，共 ${meta.length} 篇文章`);
+const articles = scanDocs(DOCS_DIR);
+
+console.log(`✅ articles = ${articles}`);
+
+// 最近 5 篇
+  const recentPosts = [...articles]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+
+  const metadata = {
+    articles,
+    recentPosts
+  };
+
+console.log(`✅ metadata = ${metadata}`);
+
+fs.writeFileSync(OUTPUT, JSON.stringify(metadata, null, 2));
+console.log(`✅ metadata.json 已生成，共 ${metadata.length} 篇文章`);
