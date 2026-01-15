@@ -57,7 +57,7 @@ function scanDocs(dir) {
       const slug = "/" + category;
       const link = slug + '.html';
       const date = getGitTime(fullPath)
-      result.push({ title, slug, link, category, date, fullPath, file });
+      result.push({ title, slug, link, category, date, relPath, fullPath, file });
     }
   }
   return result;
