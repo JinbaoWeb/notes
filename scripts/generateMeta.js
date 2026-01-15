@@ -47,7 +47,7 @@ function scanDocs(dir) {
     } else if (file.endsWith(".md")) {
       const relPath = path.relative(DOCS_DIR, fullPath);
       const category = path.dirname(relPath) === "." ? "root" : path.dirname(relPath);
-      const content = fs.readFileSync(relPath, 'utf8');
+      const content = fs.readFileSync(fullPath, 'utf8');
       const title = extractTitleFromMarkdown(content) || humanizeFilename(path.basename(file, '.md'));
       const slug = "/" + relPath.replace(/\\/g, "/");
       const link = slug + '.html';
