@@ -89,6 +89,8 @@ console.log(`✅ metadata = ${JSON.stringify(metadata, null, 2)}`);
 
 fs.writeFileSync(OUTPUT, JSON.stringify(metadata, null, 2));
 
+console.log(`✅ ${OUTPUT} 已生成，共 ${articles.length} 篇文章`);
+
 const categories = Object.keys(categoryStats || {}).filter(cat => cat && cat.trim());
 if (categories.length === 0) {
   console.warn('⚠️ No valid categories found in metadata.json');
