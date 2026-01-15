@@ -4,8 +4,8 @@
   "scripts": {
     "meta": "node scripts/generateMeta.js",
     "category": "node scripts/generateCategory.js",
-    "docs:dev": "npm run meta && npm run category && vitepress dev docs",
-    "docs:build": "npm run meta && npm run category && vitepress build docs",
+    "docs:dev": "npm run meta && vitepress dev docs",
+    "docs:build": "npm run meta && vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
@@ -16,3 +16,4 @@
     "markdown-it-mathjax3": "^4.3.2"
   }
 }
+
