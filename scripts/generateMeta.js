@@ -59,8 +59,8 @@ function scanDocs(dir) {
 }
 
 const articles = scanDocs(DOCS_DIR);
-
-console.log(`✅ articles = ${articles}`);
+console.log(`✅ 共 ${articles.length} 篇文章`);
+console.log(`✅ articles = ${JSON.stringify(articles, null, 2)}`);
 
 // 最近 5 篇
   const recentPosts = [...articles]
@@ -72,7 +72,6 @@ console.log(`✅ articles = ${articles}`);
     recentPosts
   };
 
-console.log(`✅ metadata = ${metadata}`);
+console.log(`✅ metadata = ${JSON.stringify(metadata, null, 2)}`);
 
 fs.writeFileSync(OUTPUT, JSON.stringify(metadata, null, 2));
-console.log(`✅ metadata.json 已生成，共 ${metadata.length} 篇文章`);
