@@ -38,7 +38,7 @@ function humanizeFilename(filename) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 // 递归扫描 docs 下的 md 文件
-function scanDocs(dir) {
+function scanDocs(dir, parent) {
   const result = [];
   const files = fs.readdirSync(dir);
 
@@ -46,25 +46,27 @@ function scanDocs(dir) {
     const fullPath = path.join(dir, file);
     const stat = fs.statSync(fullPath);
 
-    if (stat.isDirectory()) {
+    if (stat.isDirectory() && !IGNORE_DIRS.has(file)) {
       console.log(`当前扫描 ${dir}/${file}目录`);
-      result.push(...scanDocs(fullPath));
+      const new_parent = parent + "/" + file
+      result.push(...scanDocs(fullPath, new_parent));
     } else if (file.endsWith(".md")) {
       const relPath = path.relative(DOCS_DIR, fullPath);
-      const parts = relPath.split('.')[0].split('/');
-      const category = parts.length > 1 ? parts[parts.length-1] : 'Uncategorized';
+      const parts = parent.split('/');
+      const file_name = file.split('.')[0]
+      const category = parts.length > 0 ? parts[parts.length-1] : 'Uncategorized';
       const content = fs.readFileSync(fullPath, 'utf8');
       const title = extractTitleFromMarkdown(content) || humanizeFilename(path.basename(file, '.md'));
-      const slug = "/" + category;
+      const slug = "/" + category + "/" + file_name;
       const link = slug + '.html';
       const date = getGitTime(fullPath)
-      result.push({ title, slug, link, category, date, relPath, fullPath, dir, file });
+      result.push({ title, slug, link, category, date, relPath, fullPath, dir, file, parent });
     }
   }
   return result;
 }
-
-const articles = scanDocs(DOCS_DIR);
+const parent = ""
+const articles = scanDocs(DOCS_DIR, parent);
 console.log(`✅ 共 ${articles.length} 篇文章`);
 console.log(`✅ articles = ${JSON.stringify(articles, null, 2)}`);
 const categoryStats = {};
