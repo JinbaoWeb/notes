@@ -27,21 +27,32 @@
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue'
 import { useData } from 'vitepress'
-import fs from 'fs';
-import path from 'path';
-import meta from '/metadata.json'
+
 
 // ====== 数据获取 ======
-const { frontmatter } = useData()
+const { frontmatter, theme, site, page } = useData()
 const category = frontmatter.value.category
 
 // 安全防护：如果 category 不存在，显示错误信息（开发时有用）
 if (!category) {
   console.error('[CategoryPage] Missing "category" in frontmatter of index.md')
 }
+
+// 创建响应式数据
+const metadata = ref(null)
+
+// 监听 theme 变化
+watch(() => theme.value, (newTheme) => {
+  if (newTheme && newTheme.metadata) {
+    metadata.value = newTheme.metadata
+    console.log('获取到 metadata:', metadata.value)
+  }
+}, { immediate: true })
+
 // ====== 文章过滤与排序 ======
-const postsInCategory = meta.articles?.filter(
+const postsInCategory = metadata.articles?.filter(
   (post) => post.category === category
 ) || []
 
@@ -130,6 +141,7 @@ function formatDate(dateString) {
 }
 
 </style>
+
 
 
 
