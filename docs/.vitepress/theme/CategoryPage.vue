@@ -30,7 +30,7 @@
 import { useData } from 'vitepress'
 import fs from 'fs';
 import path from 'path';
-import meta from '../metadata.json'
+import meta from '/metadata.json'
 
 // ====== 数据获取 ======
 const { frontmatter } = useData()
@@ -130,6 +130,7 @@ function formatDate(dateString) {
 }
 
 </style>
+
 
 
 
