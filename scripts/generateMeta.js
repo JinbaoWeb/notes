@@ -1,6 +1,7 @@
 // scripts/generateMeta.js
-import fs from 'fs';
-import path from 'path';
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import { fileURLToPath } from 'url';
 
 // 兼容 ESM 的 __dirname
