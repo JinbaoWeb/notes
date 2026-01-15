@@ -4,6 +4,8 @@ import path from "node:path";
 
 const DOCS_DIR = path.resolve("docs");
 const OUTPUT = path.resolve("docs/.vitepress/metadata.json");
+const IGNORE_DIRS = new Set(['.vitepress', 'public', 'assets', '.git']);
+const IGNORE_FILENAMES = new Set(['index.md', 'README.md', 'metadata.json']);
 
 // 获取 git 最后提交时间
 function getGitTime(filePath) {
@@ -43,17 +45,19 @@ function scanDocs(dir) {
     const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
-      result.push(...scanDocs(fullPath));
-    } else if (file.endsWith(".md")) {
+      if (!IGNORE_DIRS.has(file)) {
+        result.push(...scanDocs(fullPath));
+      }
+    } else if (file.endsWith(".md")&& !IGNORE_FILENAMES.has(file)) {
       const relPath = path.relative(DOCS_DIR, fullPath);
       const parts = relPath.split('/');
-      const category = parts.length > 1 ? parts[0] : 'Uncategorized';
+      const category = parts.length > 1 ? parts[parts.length-1] : 'Uncategorized';
       const content = fs.readFileSync(fullPath, 'utf8');
       const title = extractTitleFromMarkdown(content) || humanizeFilename(path.basename(file, '.md'));
       const slug = "/" + category;
       const link = slug + '.html';
       const date = getGitTime(fullPath)
-      result.push({ title, slug, link, category, date });
+      result.push({ title, slug, link, category, date, fullPath });
     }
   }
   return result;
