@@ -1,9 +1,9 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "node:fs";
+import path from "node:path";
 import mathjax3 from "markdown-it-mathjax3";
 
 // 读取 metadata.json（确保它已由 generateMeta.js 生成）
-const metaPath = path.resolve(__dirname, '../metadata.json');
+const metaPath = path.resolve("docs/.vitepress/metadata.json");
 let categories = [];
 if (fs.existsSync(metaPath)) {
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
@@ -68,4 +68,5 @@ export default {
       }
     }
   }
+
 }
