@@ -28,6 +28,8 @@
 
 <script setup>
 import { useData } from 'vitepress'
+import fs from 'fs';
+import path from 'path';
 import meta from '../../metadata.json'
 
 // ====== 数据获取 ======
@@ -128,4 +130,5 @@ function formatDate(dateString) {
 }
 
 </style>
+
 
