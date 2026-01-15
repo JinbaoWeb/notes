@@ -9,7 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 配置
-const DOCS_DIR = path.resolve(__dirname, '../docs');
+const DOCS_DIR = path.resolve("docs");
+const OUTPUT = path.resolve("docs/.vitepress/meta.json");
 const IGNORE_DIRS = new Set(['.vitepress', 'public', 'assets', '.git']);
 const IGNORE_FILENAMES = new Set(['index.md', 'README.md', 'metadata.json']);
 
