@@ -28,8 +28,7 @@ export default {
     ],
     footer: {
       copyright: 'Copyright © 2017-present Jinbao'
-    },
-	metadata: metadata
+    }
   },
   markdown: {
     config: (md) => {
@@ -40,3 +39,4 @@ export default {
     }
   }
 }
+
